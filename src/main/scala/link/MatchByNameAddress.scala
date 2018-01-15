@@ -7,7 +7,7 @@ import info.debatty.java.stringsimilarity.JaroWinkler
 import util.SparkJob
 
 
-object MatchByFacebookNameAddress extends SparkJob {
+object MatchByNameAddress extends SparkJob {
 
   def main(args: Array[String]): Unit = {
     import spark.implicits._
@@ -32,7 +32,7 @@ object MatchByFacebookNameAddress extends SparkJob {
         .withColumnRenamed("hours", "hours2")
         .withColumnRenamed("website", "website2"),
       joinExprs =
-        'postalCode === 'postalCode2 && compareString(0.9)('name, 'name2) && compareString(0.7)('address, 'address2),
+        lower(regexp_replace('postalCode," ","")) === lower(regexp_replace('postalCode2," ","")) && compareString(0.8)('name, 'name2) && compareString(0.6)('address, 'address2),
       joinType = "inner")
       .write
       .mode(SaveMode.Overwrite)
