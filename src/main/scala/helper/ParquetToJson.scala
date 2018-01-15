@@ -11,8 +11,8 @@ object ParquetToJson extends SparkJob {
 
   def main(args: Array[String]) {
     val dir = "src/main/resources"
-    val from = "fbparquet"
-    val to = "fb"
+    val from = "factparquet"
+    val to = "fact"
     val city = "ROTTERDAM"
 
     import spark.implicits._

@@ -8,3 +8,5 @@ target/
 *.tar
 /src/main/resources/fb.parquet/
 /src/main/resources/fbparquet/
+/src/main/resources/factparquet/
+/src/main/resources/fact.parquet/
