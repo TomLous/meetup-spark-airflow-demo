@@ -13,6 +13,7 @@ object Facebook extends SparkJob {
 
     import spark.implicits._
     spark.read.json(inputPath)
+      .withColumn("facebook_id", 'id)
       .withColumn("address", $"location.street")
       .withColumn("postalCode", $"location.zip")
       .withColumn("city", $"location.city")

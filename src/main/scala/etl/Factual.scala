@@ -13,6 +13,7 @@ object Factual extends SparkJob {
 
     import spark.implicits._
     spark.read.json(inputPath)
+      .withColumn("facebook_id", 'crosswalk_id_facebook)
       .withColumn("postalCode", 'postcode)
       .withColumn("city", 'locality)
       .write
