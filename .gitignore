@@ -10,3 +10,4 @@ target/
 /src/main/resources/fbparquet/
 /src/main/resources/factparquet/
 /src/main/resources/fact.parquet/
+data
