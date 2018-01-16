@@ -15,7 +15,7 @@ default_args = {
     'retry_delay': timedelta(minutes=3)
 }
 
-dag = DAG('pipeline', default_args=default_args)
+dag = DAG('pipeline', default_args=default_args, schedule_interval="0 0 * * *", catchup=False)
 
 gcpProjectName = "training-167208"
 gcpClusterName = "meetup-cluster"

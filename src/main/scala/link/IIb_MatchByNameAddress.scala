@@ -41,10 +41,8 @@ object IIb_MatchByNameAddress extends SparkJob {
 
 
 
-
-  lazy val jaroWinkler = new JaroWinkler
-
   def compareString(treshhold: Double) = udf((s1: String, s2:String) => {
+    val jaroWinkler = new JaroWinkler
     if(s1 == null || s2 == null) false
     else jaroWinkler.similarity(s1.toLowerCase.trim , s2.toLowerCase.trim) > treshhold
   })

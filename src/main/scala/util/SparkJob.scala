@@ -12,5 +12,6 @@ trait SparkJob {
     .getOrCreate()
 
    def sparkConf: SparkConf = new SparkConf()
+     .set("spark.scheduler.mode", "FAIR")
 }
 
