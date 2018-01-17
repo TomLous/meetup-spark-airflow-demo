@@ -12,14 +12,16 @@ object Ib_Factual extends SparkJob {
     val outputPath = args(1)
 
     import spark.implicits._
-    spark.read.json(inputPath)
+    val df = spark.read.json(inputPath)
       .withColumn("facebook_id", 'crosswalk_id_facebook)
       .withColumn("postalCode", 'postcode)
       .withColumn("city", 'locality)
-      .write
+
+    df.write
       .mode(SaveMode.Overwrite)
       .parquet(outputPath)
 
+    println(s"\n\nProcessed ${df.count} lines")
   }
 
 }

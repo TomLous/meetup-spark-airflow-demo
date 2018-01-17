@@ -44,14 +44,14 @@ create_spark_cluster = DataprocClusterCreateOperator(
 
 
 # # Destroy a Spark Cluster
-# destroy_spark_cluster = DataprocClusterDeleteOperator(
-#     task_id='destroy_spark_cluster',
-#     trigger_rule='all_done',
-#     execution_timeout=timedelta(minutes=10),
-#     cluster_name=gcpClusterName,
-#     project_id=gcpProjectName,
-#     region=gcpRegion,
-#     dag=dag)
+destroy_spark_cluster = DataprocClusterDeleteOperator(
+    task_id='destroy_spark_cluster',
+    trigger_rule='all_done',
+    execution_timeout=timedelta(minutes=10),
+    cluster_name=gcpClusterName,
+    project_id=gcpProjectName,
+    region=gcpRegion,
+    dag=dag)
 
 
 # Ia ETL Facebook
@@ -146,7 +146,8 @@ export_elasticsearch = DataProcSparkOperator(
     arguments=[gcpDataStorage + "/data/match-all-enriched.parquet",
                "records/nl"],
     dataproc_spark_properties={
-        'es.nodes': "elk-1-vm"
+        'spark.es.nodes': "elk-1-vm",
+        'spark.es.nodes.wan.only': "true"
     },
     dag=dag)
 
@@ -154,8 +155,8 @@ export_elasticsearch = DataProcSparkOperator(
 
 ### Flow
 
-# destroy_spark_cluster << export_elasticsearch
-# destroy_spark_cluster << show_output
+destroy_spark_cluster << export_elasticsearch
+destroy_spark_cluster << show_output
 
 export_elasticsearch << enrich_keywords
 show_output << enrich_keywords

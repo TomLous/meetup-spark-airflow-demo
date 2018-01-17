@@ -1,6 +1,5 @@
 package link
 
-import link.IIb_MatchByNameAddress.spark
 import org.apache.spark.sql.SaveMode
 import util.SparkJob
 
@@ -18,7 +17,7 @@ object IIa_MatchByFacebookId extends SparkJob {
     val dataframe1 = spark.read.parquet(source1Path)
     val dataframe2 = spark.read.parquet(source2Path)
 
-    dataframe1.join(
+    val df = dataframe1.join(
       dataframe2
         .withColumnRenamed("facebook_id", "facebook_id2")
         .withColumnRenamed("address", "address2")
@@ -30,11 +29,13 @@ object IIa_MatchByFacebookId extends SparkJob {
         .withColumnRenamed("website", "website2"),
       joinExprs =
         'facebook_id === 'facebook_id2,
-          joinType = "inner")
-//        .drop("facebook_id")
-      .write
+      joinType = "inner")
+
+    df.write
       .mode(SaveMode.Overwrite)
       .parquet(outputPath)
+
+    println(s"\n\nProcessed ${df.count} lines")
   }
 
 }

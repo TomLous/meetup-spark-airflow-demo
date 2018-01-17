@@ -12,14 +12,18 @@ object Ia_Facebook extends SparkJob {
     val outputPath = args(1)
 
     import spark.implicits._
-    spark.read.json(inputPath)
+    val df = spark.read.json(inputPath)
       .withColumn("facebook_id", 'id)
       .withColumn("address", $"location.street")
       .withColumn("postalCode", $"location.zip")
       .withColumn("city", $"location.city")
-      .write
+
+
+      df.write
       .mode(SaveMode.Overwrite)
       .parquet(outputPath)
+
+    println(s"\n\nProcessed ${df.count} lines")
   }
 
 }

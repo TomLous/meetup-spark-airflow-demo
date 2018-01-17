@@ -19,9 +19,7 @@ object IIb_MatchByNameAddress extends SparkJob {
     val dataframe1 = spark.read.parquet(source1Path)
     val dataframe2 = spark.read.parquet(source2Path)
 
-
-
-    dataframe1.join(
+    val df = dataframe1.join(
       dataframe2
         .withColumnRenamed("facebook_id", "facebook_id2")
         .withColumnRenamed("address", "address2")
@@ -34,9 +32,12 @@ object IIb_MatchByNameAddress extends SparkJob {
       joinExprs =
         lower(regexp_replace('postalCode," ","")) === lower(regexp_replace('postalCode2," ","")) && compareString(0.8)('name, 'name2) && compareString(0.6)('address, 'address2),
       joinType = "inner")
-      .write
+
+      df.write
       .mode(SaveMode.Overwrite)
       .parquet(outputPath)
+
+    println(s"\n\nProcessed ${df.count} lines")
   }
 
 

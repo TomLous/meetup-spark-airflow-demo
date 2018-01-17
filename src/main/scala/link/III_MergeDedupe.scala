@@ -19,11 +19,14 @@ object III_MergeDedupe  extends SparkJob {
     val matchesIdDataFrame = spark.read.parquet(matchesIdPath)
     val matchesNameDataFrame = spark.read.parquet(matchesNamePath)
 
-    matchesIdDataFrame
+    val df = matchesIdDataFrame
       .union(matchesNameDataFrame)
       .dropDuplicates("facebook_id")
-      .write
+
+     df.write
       .mode(SaveMode.Overwrite)
       .parquet(outputPath)
+
+    println(s"\n\nProcessed ${df.count} lines")
   }
 }
