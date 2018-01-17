@@ -15,7 +15,7 @@ default_args = {
     'retry_delay': timedelta(minutes=3)
 }
 
-dag = DAG('pipeline', default_args=default_args, schedule_interval="0 0 * * *", catchup=False)
+dag = DAG('pipeline', default_args=default_args, schedule_interval=None, catchup=False)
 
 gcpProjectName = "training-167208"
 gcpClusterName = "meetup-cluster"
@@ -43,15 +43,15 @@ create_spark_cluster = DataprocClusterCreateOperator(
     dag=dag)
 
 
-# Destroy a Spark Cluster
-destroy_spark_cluster = DataprocClusterDeleteOperator(
-    task_id='destroy_spark_cluster',
-    trigger_rule='all_done',
-    execution_timeout=timedelta(minutes=10),
-    cluster_name=gcpClusterName,
-    project_id=gcpProjectName,
-    region=gcpRegion,
-    dag=dag)
+# # Destroy a Spark Cluster
+# destroy_spark_cluster = DataprocClusterDeleteOperator(
+#     task_id='destroy_spark_cluster',
+#     trigger_rule='all_done',
+#     execution_timeout=timedelta(minutes=10),
+#     cluster_name=gcpClusterName,
+#     project_id=gcpProjectName,
+#     region=gcpRegion,
+#     dag=dag)
 
 
 # Ia ETL Facebook
@@ -126,10 +126,39 @@ enrich_keywords = DataProcSparkOperator(
     dag=dag)
 
 
+# Show Output
+show_output = DataProcSparkOperator(
+    task_id='show_output',
+    execution_timeout=timedelta(minutes=30),
+    cluster_name=gcpClusterName,
+    dataproc_spark_jars=[gcpJar],
+    main_class='helper.ParquetShow',
+    arguments=[gcpDataStorage + "/data/match-all-enriched.parquet"],
+    dag=dag)
+
+# Export to ElasticSearch
+export_elasticsearch = DataProcSparkOperator(
+    task_id='export_elasticsearch',
+    execution_timeout=timedelta(minutes=30),
+    cluster_name=gcpClusterName,
+    dataproc_spark_jars=[gcpJar],
+    main_class='etl.V_ExportToElasticSearch',
+    arguments=[gcpDataStorage + "/data/match-all-enriched.parquet",
+               "records/nl"],
+    dataproc_spark_properties={
+        'es.nodes': "elk-1-vm"
+    },
+    dag=dag)
+
+
 
 ### Flow
 
-destroy_spark_cluster << enrich_keywords
+# destroy_spark_cluster << export_elasticsearch
+# destroy_spark_cluster << show_output
+
+export_elasticsearch << enrich_keywords
+show_output << enrich_keywords
 
 enrich_keywords << merge_dedupe
 

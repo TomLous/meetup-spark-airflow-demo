@@ -11,7 +11,9 @@ trait SparkJob {
     .appName(this.getClass.getSimpleName)
     .getOrCreate()
 
-   def sparkConf: SparkConf = new SparkConf()
-     .set("spark.scheduler.mode", "FAIR")
+  def sparkConf: SparkConf = new SparkConf()
+    .set("spark.scheduler.mode", "FAIR")
+    .set("es.index.auto.create", "true")
+
 }
 

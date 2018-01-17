@@ -55,6 +55,8 @@ object IV_Keywords extends SparkJob {
 
     val keywordList = model.stages.last.asInstanceOf[CountVectorizerModel].vocabulary.toList
 
+    println(keywordList)
+
     val combi = model.transform(textData).select(
       'facebook_id,
       keywords(keywordList)('features).as("keywords")

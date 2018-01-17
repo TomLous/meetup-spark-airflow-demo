@@ -13,9 +13,9 @@ object ParquetShow extends SparkJob {
 
     ds.printSchema()
 
-    ds.show(3)
+    ds.show(20)
 
-    println(s"# Records: ${ds.count}")
+    println(s"\n\n# Records: ${ds.count}")
   }
 
 
