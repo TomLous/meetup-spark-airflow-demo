@@ -1,6 +1,7 @@
 package etl
 
 import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.functions._
 import util.SparkJob
 
 
@@ -16,6 +17,8 @@ object Ib_Factual extends SparkJob {
       .withColumn("facebook_id", 'crosswalk_id_facebook)
       .withColumn("postalCode", 'postcode)
       .withColumn("city", 'locality)
+      .withColumn("categoryLabel", categoryLabel('parsed_category_labels))
+
 
     df.write
       .mode(SaveMode.Overwrite)
@@ -23,5 +26,7 @@ object Ib_Factual extends SparkJob {
 
     println(s"\n\nProcessed ${df.count} lines")
   }
+
+  def categoryLabel = udf((cl: Seq[Seq[String]]) => if(cl == null) None else cl.map(_.mkString(" / ")).headOption)
 
 }

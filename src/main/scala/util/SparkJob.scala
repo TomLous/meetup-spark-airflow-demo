@@ -14,6 +14,7 @@ trait SparkJob {
   def sparkConf: SparkConf = new SparkConf()
     .set("spark.scheduler.mode", "FAIR")
     .set("es.index.auto.create", "true")
+    .set("spark.es.nodes.wan.only", "true")
 
 }
 
