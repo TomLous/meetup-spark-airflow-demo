@@ -17,8 +17,10 @@ object V_ExportToElasticSearch extends SparkJob {
     val inputPath = args(0)
     val outputIndex = args(1)
 
-    val node = spark.conf.getOption("spark.es.nodes").get
-    val baseUrl = s"http://$node:9200/"
+
+    val node = spark.conf.getOption("spark.es.nodes").getOrElse("localhost")
+    val port = spark.conf.getOption("spark.es.port").getOrElse("9200")
+    val baseUrl = s"http://$node:$port/"
     val (indexName, mappingName) = outputIndex.split('/').toList match {
       case List(i, m) => (i,m)
       case _ => ("unknown","unknown")
@@ -32,8 +34,7 @@ object V_ExportToElasticSearch extends SparkJob {
     put(baseUrl + indexName, "")
 
     println(s"\nCreate mapping $baseUrl$indexName/_mapping/$mappingName")
-    val indexJson =s""""{"properties": {"geo": {"type": "geo_point"}}}"""
-    val indexJson2 =s""""{"mappings": { "$mappingName": {"properties": {"geo": {"type": "geo_point"}}}}}"""
+    val indexJson =s"""{"properties": {"geo": {"type": "geo_point"}}}"""
     put(s"$baseUrl$indexName/_mapping/$mappingName", indexJson)
 
 
@@ -50,29 +51,31 @@ object V_ExportToElasticSearch extends SparkJob {
         'parsed_category_labels.as('categoryLabel),
         'description,
         'website,
-        map(lit("lat"),'latitude.cast(DoubleType),lit("lon").cast(DoubleType),'longitude).as("geo"),
+        map(lit("lat"),'latitude.cast(DoubleType),lit("lon"),'longitude.cast(DoubleType)).as("geo"),
         'latitude,
         'longitude
-      ).saveToEs(outputIndex, Map("es.mapping.id" -> "facebook_id"))
+      )
+      .filter('latitude.isNotNull &&  'longitude.isNotNull)
+      .saveToEs(outputIndex, Map("es.mapping.id" -> "facebook_id"))
 
 
 
   }
 
   def post(url: String, jsonData: String): Boolean ={
-    val data = Http(url).compress(false).postData(jsonData).header("content-type", "application/json").asString
-      println(data)
-      data.is2xx
+    val data = Http(url).postData(jsonData).header("content-type", "application/json").asString
+    println(data)
+    data.is2xx
   }
 
   def put(url: String, jsonData: String): Boolean ={
-    val data = Http(url).compress(false).put(jsonData).header("content-type", "application/json").asString
+    val data = Http(url).put(jsonData).header("content-type", "application/json").asString
     println(data)
     data.is2xx
   }
 
   def delete(url: String): Boolean ={
-    val data = Http(url).compress(false).method("DELETE").asString
+    val data = Http(url).method("DELETE").asString
     println(data)
     data.is2xx
   }
