@@ -1,13 +1,9 @@
 package link
 
-import link.IIa_MatchByFacebookId.spark
 import org.apache.spark.sql.SaveMode
 import util.SparkJob
 
-/**
-  * Created by Tom Lous on 15/01/2018.
-  * Copyright © 2018 Datlinq B.V..
-  */
+
 object III_MergeDedupe  extends SparkJob {
 
   def main(args: Array[String]): Unit = {

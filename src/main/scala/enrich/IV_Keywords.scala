@@ -8,10 +8,7 @@ import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.functions._
 import util.SparkJob
 
-/**
-  * Created by Tom Lous on 15/01/2018.
-  * Copyright © 2018 Datlinq B.V..
-  */
+
 object IV_Keywords extends SparkJob {
 
   def main(args: Array[String]): Unit = {
