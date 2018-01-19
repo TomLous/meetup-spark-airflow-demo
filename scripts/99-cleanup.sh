@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
-gsutil rm -r gs://meetup-bucket
+gsutil rm -r gs://meetup-bucket # @todo Change to your bucket name
+gcloud compute instances delete elk-1-vm
 
-echo "Launch Bitnami's ELK stack as well: https://console.cloud.google.com/launcher/config/bitnami-launchpad/elk"
+# Remove your elk vm as well
+
+
