@@ -12,3 +12,5 @@ Created for Data Driven Rijnmond meetup
 https://www.meetup.com/nl-NL/Data-Driven-Rijnmond/events/246008610/
 
 Please join us for other cool talks & demo's
+
+![airflow pipeline](https://raw.githubusercontent.com/TomLous/meetup-spark-airflow-demo/tree/master/pipeline.png)
